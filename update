@@ -1,0 +1,5 @@
+#!/bin/bash
+git pull origin master
+git add .
+git commit -am "code changes"
+git push origin +master

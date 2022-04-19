@@ -1,0 +1,629 @@
+const CustomerReportCompo = React.memo( (props) => {
+    let cindex = props.dataKey; //customer index
+    let screen_index = props.dataScreen; //screen index
+    console.log(screen_index, "screen index")
+
+
+    return (
+                            
+            listCustomer[cindex].customer_workreport_items.map((item, key) => { 
+            let startContrctDate = '';
+            let endContrctDate = '';
+            startContrctDate =  moment(listCustomer[cindex].start_contract_date).format('X');
+            endContrctDate =  moment(listCustomer[cindex].end_contract_date).format('X');
+
+                //out of contract period report date samller than start date or greater than end date
+                if (moment(item.report_date).format('X') < startContrctDate || moment(item.report_date).format('X') > endContrctDate ) {
+                    return(
+                        // weekend block start
+                        <View key={key} style={[styles.workingHour, { borderColor: '#e3e3e3', backgroundColor: '#ffffff' }]}>
+                            <TouchableOpacity 
+                                style={[styles.workingHourHead, styles.myRow, { backgroundColor: '#e3e3e3', borderRadius: (isToggle || item.isExpanded ) ? 0 : 15 } ]} 
+                                onPress={ () => updateCustomerSingleDate(screen_index, cindex, key) }
+                            >
+                                <View style={{ width: '10%', paddingTop: 5 }}>
+                                    <Text style={ [styles.dateBlk, {paddingTop: 5}] }>
+                                        <MaterialIcons
+                                            name="check"
+                                            color="#707070"
+                                            size={22}
+                                            style={{ fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                    </Text>
+                                </View>
+                                <View style={{ width: '80%' }}>
+                                    <Text style={ styles.dateBlk }>{moment(item.report_date).format('DD/MM/YYYY')}</Text>
+                                    <Text style={{ color: '#7c7277' }}>{ langStore.out_of_the_contract_period }</Text>
+                                </View>
+                                <View style={{ width: '10%', paddingLeft: 5, paddingTop: 5 }}>
+                                    { ( isToggle || item.isExpanded ) ? (
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '-90deg'}], fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                        )
+                                        :
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '90deg'}], fontWeight: 'bold', color: '#707070'  }}
+                                        />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                            {   (isToggle || item.isExpanded) ? (
+                                <View style={ [styles.workingHourContent, {display: (isToggle || item.isExpanded) ? 'flex' : 'none'}] }>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.work_hours}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.break_time_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                        
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.night_break_time}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.working_hour_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '45%' }}>
+                                                <Text>&nbsp;</Text>
+                                                    
+                                                </View>
+                                                <View style={{ padding: 7 }}>
+                                                    <Text>&nbsp;</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text style={{ marginTop: 15 }}>{langStore.attendance_type}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                 <Text>&nbsp;</Text>
+                                                
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.reason}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                    
+                                                    <Text style={ styles.textInputStyle }>{item.out_of_the_contract_period}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                </View> 
+                                )
+                                :
+                                <Text style={{display: 'none'}}>&nbsp;</Text>
+                            }
+                        </View> 
+    
+                    )
+                }
+                // public holiday                            shift holiday                           paid holiday                            Absence                                special holiday                         Substitute Holiday         
+                else if( ((item.customer_attendance_type == 1) || (item.customer_attendance_type == 2) || (item.customer_attendance_type == 3) || (item.customer_attendance_type == 5) || (item.customer_attendance_type == 8) || (item.customer_attendance_type == 10)) && isWorkTimeHoliday ){
+                    return(
+                        // weekend block start
+                        <View key={key} style={[styles.workingHour, { borderColor: '#e3e3e3', backgroundColor: '#ffffff' }]}>
+                            <TouchableOpacity 
+                                style={[styles.workingHourHead, styles.myRow, { backgroundColor: '#e3e3e3', borderRadius: (isToggle || item.isExpanded ) ? 0 : 15 } ]} 
+                                onPress={ () => updateCustomerSingleDate(screen_index, cindex, key) }
+                            >
+                                <View style={{ width: '10%', paddingTop: 5 }}>
+                                    <Text style={ [styles.dateBlk, {paddingTop: 5}] }>
+                                        <MaterialIcons
+                                            name="check"
+                                            color="#707070"
+                                            size={22}
+                                            style={{ fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                    </Text>
+                                </View>
+                                <View style={{ width: '80%' }}>
+                                    <Text style={ styles.dateBlk }>{moment(item.report_date).format('DD/MM/YYYY')} { dayNamelangSwitch(moment(item.report_date).format('ddd'))}</Text>
+                                    <Text style={{ color: '#7c7277' }}>{ langStore.no_entries }</Text>
+                                </View>
+                                <View style={{ width: '10%', paddingLeft: 5, paddingTop: 5 }}>
+                                    { ( isToggle || item.isExpanded ) ? (
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '-90deg'}], fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                        )
+                                        :
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '90deg'}], fontWeight: 'bold', color: '#707070'  }}
+                                        />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                            {   (isToggle || item.isExpanded) ? (
+                                <View style={ [styles.workingHourContent, {display: (isToggle || item.isExpanded) ? 'flex' : 'none'}] }>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.work_hours}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.break_time_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                        
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.night_break_time}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.working_hour_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '45%' }}>
+                                                    <TextInput value={item.customer_total_work_time} editable={false} textAlign={'center'} style={ styles.textInputStyle } />
+                                                    
+                                                </View>
+                                                <View style={{ padding: 7 }}>
+                                                    <Text>&nbsp;</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text style={{ marginTop: 15 }}>{langStore.attendance_type}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                { isToggle || item.isExpanded ? 
+                                                <CustomAttendanceTypeDropdown dataFromParent={attendType} dataSeleted={item.customer_attendance_type} dataSelectKey={key} dataMkey={cindex} />
+                                                : <Text>&nbsp;</Text>
+                                                }
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.reason}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                    <TextInput 
+                                                        value={item.customer_reason}  
+                                                        onChangeText={(txt) => textInputStore(cindex, key, txt)} 
+                                                        onEndEditing={(e)=> textInputCustomerReason(cindex, key, e.nativeEvent.text)}
+                                                        onSubmitEditing={Keyboard.dismiss}
+                                                        style={ styles.textInputStyle } 
+                                                    />
+                                                    {
+                                                        item.clt_holiday_name.length > 0 ? (
+                                                            <Text>{ item.clt_holiday_name }</Text>
+                                                        ):
+                                                        <Text style={{ display: 'none' }}>&nbsp;</Text>
+                                                    }
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                </View> 
+                                )
+                                :
+                                <Text style={{display: 'none'}}>&nbsp;</Text>
+                            }
+                        </View> 
+    
+                    )
+                    
+                } else if((moment.duration(item.customer_total_work_time.toString()).asMinutes() > 0 || moment.duration(item.customer_start_time.toString()).asMinutes() > 0) && isWorkTimeEnter ) {
+                    //working hour entered
+                    return(
+                        <View key={key} style={[styles.workingHour, { borderColor: '#f2f2f2', backgroundColor: '#ffffff'  }]}>
+                            <TouchableOpacity
+                                style={[styles.workingHourHead, styles.myRow, { backgroundColor: '#f2f2f2', borderRadius: (isToggle || item.isExpanded) ? 0 : 15 } ]} 
+                                onPress = { () => updateCustomerSingleDate(screen_index, cindex, key) }
+                            >
+                                <View style={{ width: '10%', paddingTop: 5 }}>
+                                    <Text style={ [styles.dateBlk, {paddingTop: 5}] }>
+                                        <MaterialIcons
+                                            name="check"
+                                            color="#707070"
+                                            size={22}
+                                            style={{ fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                    </Text>
+                                </View>
+                                <View style={{ width: '80%' }}>
+                                    <Text style={ styles.dateBlk }>{moment(item.report_date).format('DD/MM/YYYY')} { dayNamelangSwitch(moment(item.report_date).format('ddd'))}</Text>
+                                    <Text style={{ color: '#7c7277' }}>{ langStore.wkhour_entered }</Text>
+                                </View>
+                                <View style={{ width: '10%', paddingLeft: 5, paddingTop: 5 }}>
+                                    { (isToggle || item.isExpanded) ? (
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '-90deg'}], fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                        )
+                                        :
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '90deg'}], fontWeight: 'bold', color: '#707070'  }}
+                                        />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                            {   (isToggle || item.isExpanded) ? (
+                                <View style={ [styles.workingHourContent, {display: (isToggle || item.isExpanded) ? 'flex' : 'none'}] }>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.work_hours}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '45%' }}>
+                                                    {/* <TextInput value={item.start_time} textAlign={'center'} style={ styles.textInputStyle } /> */}
+                                                    <TouchableRipple onPress={() => showTimepicker(key, 'customer_start_time')} style={ [styles.textInputStyle, { padding: 7 }] }>
+                                                        <Text>{item.customer_start_time.length > 5 ? item.customer_start_time.slice(0, -3) : item.customer_start_time }</Text>
+                                                    </TouchableRipple>
+                                                    { memberInfo.status == 1 && show && (keyCheck == key) && (typeTime == 'customer_start_time') && ( 
+                                                        <DateTimePicker
+                                                            value={date} 
+                                                            mode="time"
+                                                            is24Hour={true}
+                                                            display="spinner"
+                                                            onChange={(event, date) => {onChangeCustomer(event, date, key, 'customer_start_time', cindex)}}
+                                                        />
+                                                    )}
+                                                </View>
+                                                <View style={{ width: '10%' }}>
+                                                    <Text style={{ paddingTop: 7, paddingLeft: 5 }}>/</Text>
+                                                </View>
+                                                <View style={{ width: '45%' }}>
+                                                    {/* <TextInput value={item.end_time} textAlign={'center'} style={ styles.textInputStyle } /> */}
+                                                    <TouchableRipple onPress={() => showTimepicker(key, 'customer_end_time')} style={ [styles.textInputStyle, { padding: 7 }] }>
+                                                        <Text>{item.customer_end_time.length > 5 ? item.customer_end_time.slice(0, -3) : item.customer_end_time }</Text>
+                                                    </TouchableRipple>
+                                                    { memberInfo.status == 1 && show && (keyCheck == key) && (typeTime == 'customer_end_time') && ( 
+                                                        <DateTimePicker
+                                                            value={date}
+                                                            mode="time"
+                                                            is24Hour={true}
+                                                            display="spinner"
+                                                            onChange={(event, date) => {onChangeCustomer(event, date, key, 'customer_end_time', cindex)}}
+                                                        />
+                                                    )}
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>&nbsp;</Text>
+                                        </View>
+                                        
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.break_time_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '30%' }}>
+                                                    <TextInput value={item.customer_break_time.toString()} editable={ memberInfo.status == 1 ? true : false } keyboardType='phone-pad' onChangeText={txt => replaceCustomerNightBT(key, 'customer_break_time', txt, cindex)} textAlign={'center'} style={ styles.textInputStyle } />
+                    
+                                                </View>
+                                                <View style={{ padding: 7 }}>
+                                                    <Text>{ langStore.minute }</Text>
+                                                </View>
+                                                {
+                                                    item.break_time_error ? (
+                                                        <Text style={[ styles.errorMsg, {width: '100%'}]}>{ langStore.incorrect }</Text>
+                                                    ):
+                                                    <Text>&nbsp;</Text>
+                                                }
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.night_break_time}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '30%' }}>
+                                                    <TextInput value={item.customer_night_break_time.toString()} editable={ memberInfo.status == 1 ? true : false } keyboardType='phone-pad' onChangeText={txt => replaceCustomerNightBT(key, 'customer_break_time', txt, cindex) } textAlign={'center'} style={ styles.textInputStyle } />
+                                                    
+                                                </View>
+                                                <View style={{ padding: 7 }}>
+                                                    <Text>{ langStore.minute }</Text>
+                                                </View>
+                                                {
+                                                    item.night_break_time_error ? (
+                                                        <Text style={{ width: '100%' }}>{ langStore.incorrect }</Text>
+                                                    ):
+                                                    <Text>&nbsp;</Text>
+                                                }
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.working_hour_mobile}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '45%' }}>
+                                                    <TextInput value={item.customer_total_work_time.length > 5 ? item.customer_total_work_time.slice(0, -3) : item.customer_total_work_time } editable = {false} textAlign={'center'} style={ [styles.textInputStyle, styles.editDisabled] } />
+                                                </View>
+                                                <View style={{ padding: 7 }}>
+                                                    <Text>&nbsp;</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text style={{ marginTop: 15 }}>{langStore.attendance_type}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                { isToggle || item.isExpanded ? 
+                                                    <CustomAttendanceTypeDropdown dataFromParent={attendType} dataSeleted={item.customer_attendance_type} dataSelectKey={key}  dataMkey={cindex} />
+                                                : <Text>&nbsp;</Text>
+                                                }
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.myRow}>
+                                        <View style={styles.columPd}>
+                                            <Text>{langStore.reason}</Text>
+                                        </View>
+                                        <View style={styles.columPd}>
+                                            <View style={ styles.myRow }>
+                                                <View style={{ width: '100%' }}>
+                                                    <TextInput value={item.customer_reason} editable={ memberInfo.status == 1 ? true : false } 
+                                                        onChangeText={(txt) => textInputStore(cindex, key, txt)} 
+                                                        onEndEditing={(e)=> textInputCustomerReason(cindex, key, e.nativeEvent.text)}
+                                                        onSubmitEditing={Keyboard.dismiss}
+                                                        style={ styles.textInputStyle } 
+                                                    />
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                </View> 
+                                )
+                                :
+                                <Text style={{display: 'none'}}>&nbsp;</Text>
+                            }
+                        </View> 
+                    )
+
+                } else if ( (moment.duration(item.customer_total_work_time.toString()).asMinutes() == 0) && isWorkTimeNotEnter ) {
+                    return(
+                        // weekday with blue block start
+                        <View key={key} style={[styles.workingHour, { borderColor: '#d6f2ec', backgroundColor: '#ffffff'  }]}>
+                            <TouchableOpacity style={[styles.workingHourHead, styles.myRow, { backgroundColor: '#d6f2ec', borderRadius: (isToggle || item.isExpanded ) ? 0 : 15 } ]} 
+                                onPress = { () => updateCustomerSingleDate(screen_index, cindex, key) }
+                            >
+                                <View style={{ width: '10%', paddingTop: 5 }}>
+                                    <Text style={ styles.dateBlk }> !</Text>
+                                </View>
+                                <View style={{ width: '80%' }}>
+                                    <Text style={ styles.dateBlk }>{moment(item.report_date).format('DD/MM/YYYY')} { dayNamelangSwitch(moment(item.report_date).format('ddd'))}</Text>
+                                    <Text style={{ color: '#7c7277' }}>{langStore.wkhour_not_entered}</Text>
+                                </View>
+                                <View style={{ width: '10%', paddingLeft: 5, paddingTop: 5 }}>
+                                    
+                                    { ( isToggle || item.isExpanded ) ? (
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '-90deg'}], fontWeight: 'bold', color: '#707070' }}
+                                        />
+                                        )
+                                        :
+                                        <MaterialIcons
+                                            name="navigate-next"
+                                            color="#707070"
+                                            size={30}
+                                            style={{ transform: [{rotate: '90deg'}], fontWeight: 'bold', color: '#707070'  }}
+                                        />
+                                    }
+                                    
+                                </View>
+                            </TouchableOpacity>
+                            {   (isToggle || item.isExpanded) ? (
+                            <View style={ [styles.workingHourContent, {display: ( isToggle || item.isExpanded ) ? 'flex': 'none'} ] } >
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text>{langStore.work_hours}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '45%' }}>
+                                                {/* <TextInput value={item.start_time} textAlign={'center'} onChangeText={txt => replaceChangeVal(key, 'start_time', txt)} style={ styles.textInputStyle } /> */}
+                                                <TouchableRipple onPress={() => showTimepicker(key, 'customer_start_time')} style={ [styles.textInputStyle, { padding: 7 }] }>
+                                                    <Text>{ item.customer_start_time.length > 5 ? item.customer_start_time.slice(0, -3) : item.customer_start_time }</Text>
+                                                </TouchableRipple>
+                                                { memberInfo.status == 1 && show && (keyCheck == key) && (typeTime == 'customer_start_time') && ( 
+                                                    <DateTimePicker
+                                                        value={date}
+                                                        mode="time"
+                                                        is24Hour={true}
+                                                        display="spinner"
+                                                        onChange={(event, date) => {onChangeCustomer(event, date, key, 'customer_start_time', cindex)}}
+                                                    />
+                                                )}
+                                            </View>
+                                            <View style={{ width: '10%' }}>
+                                                <Text style={{ paddingTop: 7, paddingLeft: 5 }}>/</Text>
+                                            </View>
+                                            <View style={{ width: '45%' }}>
+                                                {/* <TextInput value={item.end_time} textAlign={'center'} onChangeText={txt => replaceChangeVal(key, 'end_time', txt)} style={ styles.textInputStyle } /> */}
+                                                <TouchableRipple onPress={() => showTimepicker(key, 'customer_end_time')} style={ [styles.textInputStyle, { padding: 7 }] }>
+                                                    <Text>{item.customer_end_time.length > 5 ? item.customer_end_time.slice(0, -3) : item.customer_end_time }</Text>
+                                                </TouchableRipple>
+                                                { memberInfo.status == 1 && show && (keyCheck == key) && (typeTime == 'customer_end_time') && ( 
+                                                    <DateTimePicker
+                                                        value={date}
+                                                        mode="time"
+                                                        is24Hour={true}
+                                                        display="spinner"
+                                                        onChange={(event, date) => {onChangeCustomer(event, date, key, 'customer_end_time', cindex)}}
+                                                    />
+                                                )}
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text>{langStore.break_time_mobile}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '30%' }}>
+                                                <TextInput value={item.customer_break_time.toString()} textAlign={'center'} editable={ memberInfo.status == 1 ? true : false } style={[ styles.textInputStyle ]} />
+                                            </View>
+                                            <View style={{ padding: 7 }}>
+                                                <Text>{ langStore.minute }</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text>{langStore.night_break_time}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '30%' }}>
+                                                <TextInput value={item.customer_night_break_time.toString()} textAlign={'center'} editable={ memberInfo.status == 1 ? true : false } style={ styles.textInputStyle } />
+                                            </View>
+                                            <View style={{ padding: 7 }}>
+                                                <Text>{ langStore.minute }</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text>{langStore.working_hour_mobile}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '45%' }}>
+                                                <TextInput value={item.customer_total_work_time.length > 5 ? item.customer_total_work_time.slice(0, -3) : item.customer_total_work_time } editable={false} textAlign={'center'} style={ [styles.textInputStyle, styles.editDisabled] } />
+                                            </View>
+                                            <View style={{ padding: 7 }}>
+                                                <Text>&nbsp;</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text style={{ marginTop: 15 }}>{langStore.attendance_type}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '100%' }}>
+                                            { isToggle || item.isExpanded ? 
+                                                <CustomAttendanceTypeDropdown dataFromParent={attendType} dataSeleted={item.customer_attendance_type} dataSelectKey={key}  dataMkey={cindex} />
+                                                : <Text>&nbsp;</Text>
+                                            }
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.myRow}>
+                                    <View style={styles.columPd}>
+                                        <Text>{langStore.reason}</Text>
+                                    </View>
+                                    <View style={styles.columPd}>
+                                        <View style={ styles.myRow }>
+                                            <View style={{ width: '100%' }}>
+                                                <TextInput value={item.customer_reason} editable={ memberInfo.status == 1 ? true : false } onChangeText={(txt) => textInputCustomerReason(cindex, key, txt)} style={ styles.textInputStyle } />
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                
+                            </View>
+                            )
+                                :
+                                <Text style={{display: 'none'}}>&nbsp;</Text>
+                            } 
+                        </View>
+                    );
+                }
+                    
+                })
+            
+    )
+})

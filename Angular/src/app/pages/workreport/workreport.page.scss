@@ -1,0 +1,60 @@
+.input-style{
+    border: 1px solid #000000 !important;
+    margin-top: 3px !important;
+    text-align: center !important;
+}
+.btn-style-search{
+    margin: 5px 10px 10px;
+}
+
+.table-responsive{
+    overflow-x:auto;
+    overflow-y:auto;
+    height: 300px;
+    margin: 15px;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even){background-color: #f2f2f2}
+
+.btn-help{
+    padding: 0px 10px;
+    background: #cbe9ff;
+    border-radius: 13px;
+    margin: 5px;
+    border: 1px solid #3ea0e6;
+}
+.ftbtnColor{
+    background-color: #6fd3bf;
+    border-radius: 13px;
+    margin: 5px auto;
+    border: 1px solid #6fd3bf;
+    width: 90%;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+}
+.ftbtngrayColor{
+    background-color: #2d9f88;
+    border-radius: 13px;
+    margin: 5px auto;
+    border: 1px solid #2d9f88;
+    width: 95%;
+    color: #ffffff;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+}
+
+.footerbar {
+    background: #37c3a7;
+}

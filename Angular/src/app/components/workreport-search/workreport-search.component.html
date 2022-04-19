@@ -1,0 +1,29 @@
+
+ <ion-list>
+  <ion-item lines="none" >
+    <p>{{ dataLeng?.application }} <br>
+      <span style="font-size: 1.5em; font-weight: bold; color: #707070;">{{ dataLeng?.workreport }}  {{ dataLeng?.application }} {{ postData.year}}/{{ postData.month }}</span> 
+    </p>
+
+  </ion-item>
+</ion-list>
+ <ion-grid>
+ <ion-row>
+   <ion-col color="primary" >
+     <ion-select class="borderOnewidth" [(ngModel)]="postData.year" value="{{ postData.year }}" style="width: 100%"  name="year" placeholder="-" >
+       <ion-select-option *ngFor="let y of yearlist" value="{{ y.value }}">{{ y.value }}</ion-select-option>
+     </ion-select>
+   </ion-col>
+   <ion-col size='1'><p class="postline">/</p></ion-col>
+   <ion-col >
+     <ion-select class="borderOnewidth" [(ngModel)]="postData.month" value="{{ postData.month }}" style="width: 100%" name="month" placeholder="-" >
+       <ion-select-option *ngFor="let m of monthlist" value="{{ m.value }}">{{ m.value }}</ion-select-option>
+     </ion-select>
+   </ion-col>
+   <ion-col size='4' >
+    <!-- <ion-button expand="block"  share="round" [ngStyle]="{'background-color':'#f2fffd'}" color="white" class="bd1-color"  >Search</ion-button> -->
+     <ion-button expand="block" fill="outline" (click)="searchWkReportAction()" [ngStyle]="{'background-color':'#f2fffd'}" [ngStyle]="{'color':'#707070!important'}" [ngStyle]="{'border-radius':'20px'}">{{ dataLeng?.search }}</ion-button>
+   </ion-col>
+ </ion-row>
+</ion-grid>
+

@@ -1,0 +1,34 @@
+<div style="margin: 15px;">
+  <h1 [innerHtml]="userGuide?.user_guide"></h1>
+  <div class="bluegreen">
+    <div [innerHtml]="userGuide?.header_1"></div>
+    <div [innerHtml]="userGuide?.header_2"></div>
+  </div>
+
+  <div class="graylight">
+    <h2 [innerHtml]="userGuide?.notice"></h2>
+    <ul [innerHtml]="userGuide?.notice_list"></ul>
+  </div>
+
+  <div class="whitebg">
+    <h2 [innerHtml]="userGuide?.basic_operation"></h2>
+    <div [innerHtml]="userGuide?.login_guide"></div>
+    <div class="remainer" [innerHtml]="userGuide?.navigation_permission"></div>
+    <div class="warning" [innerHtml]="userGuide?.logout_warning"></div>
+  </div>
+
+  <div class="whitebg">
+    <h2 [innerHtml]="userGuide?.workreport_operation"></h2>
+    <div [innerHtml]="userGuide?.work_report_operation_guide"></div>
+  </div>
+
+  <div class="graylight">
+    <h2 [innerHtml]="userGuide?.customer_operation"></h2>
+    <div [innerHtml]="userGuide?.customer_operation_guide"></div>
+  </div>
+  
+  <div class="whitebg">
+    <h2 [innerHtml]="userGuide?.transpotation_expense"></h2>
+    <div [innerHtml]="userGuide?.transpotation_expense_guide"></div>
+  </div>
+</div>

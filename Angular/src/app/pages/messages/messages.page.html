@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start" style="margin-right: 5px;">
+      <ion-back-button defaultHref="/home/feed" text="" style="color: #707070;" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end" (click)="gotoPagesAction('home/help')" class="btn-help">
+      <span style="color: #3ea0e6;">Help</span> 
+      <ion-icon name="help-circle-outline" style="width: 23px; height: 23px; color: #3ea0e6;"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light"> 
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."></ion-refresher-content>
+  </ion-refresher>
+  <app-profile [loginUser]="authUser"></app-profile>
+  
+ <!-- <ion-list>   
+    <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">  
+      <ion-item *ngFor="let item of listItems">  
+        <ion-label>  
+          {{item}}  
+        </ion-label>  
+        <ion-reorder></ion-reorder>  
+      </ion-item>  
+    </ion-reorder-group>  
+  </ion-list>  
+  <ion-list class="ion-text-center">  
+    <ion-button (click)="getList()">Get Updated new List</ion-button>  
+  </ion-list> --> 
+</ion-content>  
+<!-- <ion-footer >
+  <ion-toolbar class="footerbar" color="newColor">
+    <ion-grid class="footerbar">
+      <ion-row>
+        <ion-col>
+          <ion-button class="ftbtnColor" color="ftbtnColor">Store</ion-button>
+        </ion-col>
+        <ion-col >
+          <ion-button class="ftbtngrayColor" color="ftbtnColor">Apply</ion-button>
+        </ion-col>
+        <ion-col >
+          <ion-button class="ftbtngrayColor" color="ftbtnColor">Expense</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer> -->

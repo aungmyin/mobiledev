@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content >
+  <!-- <div [innerHtml]="helpHtml"></div> -->
+  <ion-list>
+    <ion-item lines="none" >
+      <h2 *ngIf="postData.language == 'en'" style="color: #79d4c8;">Need Help?</h2>
+      <h2 *ngIf="postData.language == 'jp'" style="color: #79d4c8;">助けが必要?</h2>
+    </ion-item>
+  </ion-list>
+  <ion-list lines="none" class="nextview-blk" (click)="gotoPagesAction('home/user-guide')">
+    <ion-item class="link-pages" *ngIf="postData.language == 'en'">
+      User Guide
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item class="link-pages" *ngIf="postData.language == 'jp'">
+      ユーザーガイド
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+  <ion-list lines="none" class="nextview-blk" (click)="gotoPagesAction('home/faq')">
+    <ion-item class="link-pages" *ngIf="postData.language == 'en'">
+      FAQ
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item class="link-pages" *ngIf="postData.language == 'jp'">
+      よくある質問
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+  <!-- <ion-list lines="none" class="nextview-blk" (click)="gotoPagesAction('home/workreport')">
+    <ion-item class="link-pages">
+      Inquiry
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list> -->
+
+</ion-content>

@@ -1,0 +1,141 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start" style="margin-right: 5px;">
+      <ion-back-button defaultHref="/home/workreport?year={{ postData.year }}&month={{ postData.month }}" text="" style="color: #707070;" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end" class="btn-help">
+      <span style="color: #3ea0e6;">Help</span> 
+      <ion-icon name="help-circle-outline" style="width: 23px; height: 23px; color: #3ea0e6;"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!--<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content 
+    pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."></ion-refresher-content>
+  </ion-refresher>
+  <app-clientinfo [loginUser]="authUser"></app-clientinfo> -->
+  <ion-list>
+    <ion-item lines="none" >
+      <p style="padding-top: 15px;">{{ dataLeng?.application }} <br>
+        <span class="titlefont">{{ dataLeng?.client_infomation }}</span> 
+      </p>
+  
+    </ion-item>
+  </ion-list>
+  
+  <ion-list class="topblk" lines="none">
+    
+    <ion-grid >
+      <ion-row>
+        <ion-col size="1"><ion-icon name="create-outline" style="font-size: 1.4rem;"></ion-icon></ion-col>
+        <ion-col size="11">
+          <p style="margin-top: 0px;">
+           <!-- <span style="font-size: 1.1rem;">{{ dataLeng?.edit_customer_info }}</span> <br> -->
+           {{ dataLeng?.if_there }}
+          </p>
+          <div *ngIf="delFlg == 1">
+            <span (click)="sendEmailtoAdmin()" style="color:blue;">
+              Send email to admin
+            </span>
+            </div>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="delFlg == 0" class="rowitem" (click)="delClientInfo(0)">
+        <ion-col size="1">
+          <ion-icon name="trash-outline" style="font-size: 1.4rem;"></ion-icon>
+        </ion-col>
+        <ion-col size="11">
+           <span style="font-size: 1.1rem;">{{ dataLeng?.delete_customer_info }}</span> 
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+  <div *ngIf="delFlg == 0">
+    <ion-list *ngFor="let clinfo of data;" lines="none">
+      <ion-item-sliding>
+        <ion-item >
+          <p><b>{{ dataLeng?.individual_contract_no }}: </b><br> 
+            {{ clinfo.individual_contract_no }}</p>
+        </ion-item>
+        <ion-item >
+          <p><b>{{ dataLeng?.customer_name }}:</b><br> 
+            {{ clinfo.client_name }}</p>
+        </ion-item>
+        <ion-item>
+          <p><b>{{ dataLeng?.project_name }}:</b><br> 
+            {{ clinfo.project_name }}</p>
+        </ion-item>
+        <ion-item>
+          <p><b>{{ dataLeng?.contract_period }}:</b> <br> 
+            {{ clinfo.start_contract_date | date }} ~ {{ clinfo.end_contract_date | date }} </p>
+        </ion-item>
+        <ion-item >
+          <p><b>{{ dataLeng?.contract_type }}:</b><br> 
+            {{ getContractTypeById(clinfo.contract_type) }}  </p>
+        </ion-item>
+        <ion-item >
+          <p><b>During working hours:</b><br> 
+            {{ clinfo.min_width_time }}h ~ {{ clinfo.max_width_time }}h </p>
+        </ion-item>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+  <!-- <div *ngIf="delFlg == 1">
+    <ion-list lines="none" class="alertview-blk">
+      <ion-item class="alert-blk" color="alertColor" >
+        <p>
+          {{ dataLeng?.the_application_deadline }}
+          
+        </p>
+        
+      </ion-item>
+    </ion-list>
+  </div> -->
+ 
+  <div *ngIf="delFlg == 0">
+    <ion-list lines="none" style="margin-bottom: 20px;">
+      <ion-item *ngFor="let p of wkPattern; let i=index;">
+        <ion-checkbox slot="start" color="primary" ></ion-checkbox>
+        Break Time {{ p.pattern }} <br/>
+        {{ p.start_time }}~{{ p.end_time }} Break Time {{ p.break_time }} {{ p.working_time }}h  
+      </ion-item>
+    </ion-list>
+  </div>
+    <div style="border-bottom: 2px dashed #dddddd; margin: 0 15px 15px 15px;">&nbsp;</div>
+    <ion-list class="btn-container" lines="none">
+      <ion-item lines="none">
+        <div class="addnewblg">
+            <ion-button color="secondary" class="add-transport-btn" (click)="showCustmers()" >
+                + {{ dataLeng?.add_customer }}
+            </ion-button>
+        </div>
+      </ion-item>
+      
+    </ion-list>
+  
+
+  <div *ngIf="showClStatus == 1" class="table-responsive">
+    <ion-list lines="none" *ngFor="let cl of showClients; let i = index ">
+      <ion-item>Client Name: {{ cl.client_name }}</ion-item>
+      <ion-item>Project Name: {{ cl.project_name }}</ion-item>
+      <ion-item>Contract Type: {{ cl.contract_type }}</ion-item>
+      <ion-item>Contract Start Date: {{ cl.start_contract_date | date: 'yyyy/MM/dd EEEE' }}</ion-item>
+      <ion-item>Contract End Date: {{ cl.end_contract_date | date: 'yyyy/MM/dd EEEE' }}</ion-item>
+      <ion-item>Max Time: {{ cl.max_width_time }}H</ion-item>
+      <ion-item>Min Time {{ cl.min_width_time }}H</ion-item>
+      <ion-item> 
+        <div class="addnewblg">
+          <ion-button class="add-transport-btn" (click)="addCustomer(i)">Select</ion-button>
+        </div></ion-item>
+    </ion-list>
+    
+  </div>
+
+  
+  
+</ion-content>

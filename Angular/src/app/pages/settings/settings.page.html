@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button style="color:#707070"></ion-menu-button>
+    </ion-buttons>
+    <ion-title *ngIf="postData.language == 'en'">Settings</ion-title>
+    <ion-title *ngIf="postData.language == 'jp'">設定</ion-title>
+    <ion-buttons slot="end" (click)="gotoPagesAction('home/help')" class="btn-help">
+      <span style="color: #3ea0e6;">Help</span> 
+      <ion-icon name="help-circle-outline" style="width: 23px; height: 23px; color: #3ea0e6;"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- <ion-grid>
+    <ion-row>
+      <ion-col class="primary" style="background-color: aquamarine;">
+        ion-col
+      </ion-col>
+      <ion-col>
+        ion-col
+      </ion-col>
+      <ion-col class="primary">
+        ion-col
+      </ion-col>
+      <ion-col>
+        ion-col
+      </ion-col>
+    </ion-row>
+  </ion-grid> -->
+  <h4 class="languageSwitch" *ngIf="postData.language == 'en'">Language Switch</h4>
+  <h4 class="languageSwitch" *ngIf="postData.language == 'jp'">言語スイッチ</h4>
+  <ion-select [(ngModel)]="postData.language" (ngModelChange)="changeLanguageClick()" class="languageChange">
+    <ion-select-option value="en">English</ion-select-option>
+    <ion-select-option value="jp">Japanese</ion-select-option>
+  </ion-select>
+
+  <ion-button *ngIf="postData.language == 'en'" expand="block" color="primary btn-position" (click)="logoutAction()" >
+    <ion-icon name="log-out" slot="start"></ion-icon>
+    Log out
+  </ion-button>
+  <ion-button *ngIf="postData.language == 'jp'" expand="block" color="primary btn-position" (click)="logoutAction()" >
+    <ion-icon name="log-out" slot="start"></ion-icon>
+    ログアウト
+  </ion-button>
+  <!-- <p>token: {{ displayUserData['access-token'] }}</p> 
+  <p>Company: {{ displayUserData.company }}</p>
+  <p><a routerLink='/home/downloads'>downloads</a></p>-->
+</ion-content>

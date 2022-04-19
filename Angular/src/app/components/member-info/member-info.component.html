@@ -1,0 +1,2041 @@
+<ion-list>
+  <ion-item lines="none" >
+    <p>{{ dataLeng?.application }} <br>
+      <span style="font-size: 1.5em; font-weight: bold; color: #707070;">{{ dataLeng?.workreport }}  {{ dataLeng?.application }} {{ postData.year}}/{{ postData.month }}</span> 
+    </p>
+
+  </ion-item>
+</ion-list>
+ <ion-grid>
+ <ion-row>
+   <ion-col color="primary" >
+     <ion-select class="borderOnewidth" [(ngModel)]="postData.year" value="{{ postData.year }}" style="width: 100%"  name="year" placeholder="-" >
+       <ion-select-option *ngFor="let y of yearlist" value="{{ y.value }}">{{ y.value }}</ion-select-option>
+     </ion-select>
+   </ion-col>
+   <ion-col size='1'><p class="postline">/</p></ion-col>
+   <ion-col >
+     <ion-select class="borderOnewidth" [(ngModel)]="postData.month" value="{{ postData.month }}" style="width: 100%" name="month" placeholder="-" >
+       <ion-select-option *ngFor="let m of monthlist" value="{{ m.value }}">{{ m.value }}</ion-select-option>
+     </ion-select>
+   </ion-col>
+   <ion-col size='4' >
+    <!-- <ion-button expand="block"  share="round" [ngStyle]="{'background-color':'#f2fffd'}" color="white" class="bd1-color"  >Search</ion-button> -->
+     <ion-button expand="block" fill="outline" (click)="searchWkReportAction()" [ngStyle]="{'background-color':'#f2fffd'}" [ngStyle]="{'color':'#707070!important'}" [ngStyle]="{'border-radius':'20px'}">{{ dataLeng?.search }}</ion-button>
+   </ion-col>
+ </ion-row>
+</ion-grid>
+
+<form [formGroup]="workReportForm" (ngSubmit)="onSubmit()">
+<ion-list lines="none">
+  <ion-item >
+    <p class="fontstyle">{{ dataLeng?.status }}: <span class="statusVal">{{ mbInfo?.status_name }}</span></p>
+  </ion-item>
+</ion-list>
+<ion-list lines="none" class="alertview-blk">
+  <ion-item class="alert-blk" color="alertColor" >
+    <p>
+      {{ dataLeng?.the_application_deadline }}
+    </p>
+  </ion-item>
+</ion-list>
+<ion-list lines="none" class="nextview-blk" (click)="goMoreInfoClient('/home/client')">
+  <ion-item class="link-pages" color="newColor" >
+    {{ dataLeng?.customer_information }}
+    <ion-icon slot="end" style="font-size: 24px;" name="chevron-forward-outline"></ion-icon>
+  </ion-item>
+</ion-list>
+<ion-list class="bottomline" lines="none">
+  <ion-item >
+    <p class="fontstyle"></p>{{ dataLeng?.transportation }}: 
+    <ion-select slot="end" *ngIf="postData.language == 'en'" value="{{mbInfo?.dairy_transrate_flg}}" placeholder="Select One" >
+      <ion-select-option *ngFor="let t of tran_expen" value="{{ t.id }}">{{ t.value }}</ion-select-option>
+    </ion-select> 
+    <ion-select slot="end" *ngIf="postData.language == 'jp'" value="{{mbInfo?.dairy_transrate_flg}}" placeholder="Select One" >
+      <ion-select-option *ngFor="let t of tran_expen_jp" value="{{ t.id }}">{{ t.value }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+<div class="table-responsive">
+  <table class="table"> 
+    <thead>
+      <tr>
+        <th scope="col" class="firstWidth">
+          <div class="btn-style" [ngClass]="{
+            'active': workreport_switch
+          }" (click)="changeDisplayClick('workreport')">
+          {{ dataLeng?.work_report }}
+          </div>
+        </th>
+        <th scope="col" class="minwidth" (click)="changeDisplayClick('transporatiion')">
+          <div class="btn-style" [ngClass]="{
+            'active': trasport_switch
+          }" style="min-width: 250px;">
+          {{ dataLeng?.transportation }}
+          </div>
+        </th>
+        <th scope="col" *ngIf="clientInfo1 == 1" class="minwidth" (click)="changeDisplayClick('customer')">
+          <div class="btn-style" [ngClass]="{
+            'active': customer_switch
+          }" style="min-width: 230px;">
+          {{ dataLeng?.customer_workreport }}
+          </div>
+        </th>
+        <th *ngIf="clientInfo2 == 1" scope="col" class="minwidth" (click)="changeDisplayClick('customer2')">
+          <div class="btn-style" [ngClass]="{
+            'active': customer_switch2
+          }" style="min-width: 230px;">
+          {{ dataLeng?.customer_workreport }} 2
+          </div>
+        </th>
+        <!-- <th scope="col" *ngIf="mbInfo?.sales_bill_flg == 1" class="minwidth" (click)="changeDisplayClick('settlement')">
+          <div class="btn-style" [ngClass]="{
+            'active': settle_switch
+          }" style="min-width: 230px;">
+          Settlement Expense
+          </div> 
+        </th> -->
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<!-- Start Workreport list -->
+<div id="workreport_blk" *ngIf="workreport_switch == true">
+  <ion-list lines="none" class="filter-blk">
+    <ion-item class="filter-pages" color="newColor" >
+      {{ dataLeng?.filter }}:
+      <ion-icon slot="end" name="chevron-up-outline" style="font-size: 15px;"></ion-icon>
+      <!-- <ion-icon slot="end" name="chevron-down-outline" style="font-size: 13px;"></ion-icon> -->
+    </ion-item>
+    <ul class="checklist" *ngIf="postData.language == 'en'">
+      <li *ngFor="let entry of checkBoxList; let n = index ">
+        <div (click)="onClickDays(n)">
+          <ion-checkbox class="checkbox-style"  slot="start" [ngModelOptions]="{standalone: true}" [(ngModel)]="entry.isChecked"></ion-checkbox>
+          {{entry.val}}
+        </div>
+      </li>
+    </ul>
+    <ul class="checklist" *ngIf="postData.language == 'jp'">
+      <li *ngFor="let entry of checkBoxListjp; let n = index  ">
+        <div (click)="onClickDays(n)">
+          <ion-checkbox class="checkbox-style"  slot="start" [(ngModel)]="entry.isChecked" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          {{entry.val}}
+        </div>
+      </li>
+    </ul>
+    <!-- <ul class="checklist">
+      <li (click)="onClickDays(2)">
+        <ion-icon slot="start" name="list-outline"></ion-icon>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'en'">List</ion-label>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'jp'">リスト</ion-label>
+      </li>
+      <li>
+        <ion-icon slot="start" name="calendar-outline"></ion-icon>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'en'">Calendar</ion-label>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'jp'">カレンダー</ion-label>
+      </li>
+    </ul> -->
+    <div style="border-top: 1px dashed #f0f0f0;clear: both; height: 5px;">&nbsp;</div>
+    <ul class="checklist">
+      <li (click)="AllToggleFunction(1)">
+        <ion-icon slot="start" name="expand-outline"></ion-icon>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'en'">Expand dates</ion-label>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'jp'">日付を展開する</ion-label>
+      </li>
+      <li (click)="AllToggleFunction(2)">
+        <ion-icon slot="start" name="contract-outline"></ion-icon>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'en'">Collapse dates</ion-label>
+        <ion-label style="margin-left: 5px;" *ngIf="postData.language == 'jp'">崩壊日</ion-label>
+      </li>
+    </ul>
+    <!-- <ion-item *ngFor="let entry of checkBoxList">
+      <ion-label>{{entry.val}}</ion-label>
+      <ion-checkbox slot="start" [(ngModel)]="entry.isChecked"></ion-checkbox>
+    </ion-item> --> 
+  </ion-list>
+
+  <ion-list lines="none">
+    <ion-item>
+      <ul class="checklist">
+        <li>
+          <ion-label style="color: #cccccc;" *ngIf="postData.language == 'en'">Jump to: </ion-label>
+          <ion-label style="color: #cccccc;" *ngIf="postData.language == 'jp'">にジャンプ: </ion-label>
+        </li>
+        <li>
+          <ion-label (click)="scrolltoElement('totalblk')"><u>{{ dataLeng?.total }}</u></ion-label>
+        </li>
+        <li>
+          <ion-label (click)="scrolltoElement('resultblk')"><u>{{ dataLeng?.result }}</u></ion-label>
+        </li>
+      </ul>
+    </ion-item>
+  </ion-list>
+
+  <div style="margin: 15px;">
+    <ion-list lines="none">
+      <ion-item class="showDate" *ngIf="notEnterMsg == false">
+        <p>
+          Showing dates with Working Hours Not Entered<br>
+          <u (click)="onClickDays(2)" style="font-weight: 300;">View all dates</u> 
+        </p>
+        
+      </ion-item>
+    </ion-list>
+  </div>
+  
+  <div formArrayName="work_report_detail">
+    <div *ngFor="let item of work_report_detail.controls ; let i = index ">
+      <div [formGroupName]="i">
+        <!-- <h2>{{ item.value.report_date | date: 'yyyy/MM/dd EEEE' }}</h2> -->
+        <ion-list lines="none" class="date-container bg-bluelight" *ngIf="(item.value.atendance_type != 1) && ( (startNEndTimeCheck(item.value.start_time) == true) || (startNEndTimeCheck(item.value.end_time) == true) ) && (isWeekEnd(item.value.report_date) == false) && (notEnter == false)" >
+        
+          <ion-item tappable (click)="myWkToggleFunction('mywk' + i, i)" class="date-blk" color="newColor" >
+            <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+            <p>
+              <span class="datetitle">{{ item.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+              <span>{{ dataLeng?.wkhour_not_entered }}</span>
+              <!-- <span *ngIf="item.value.atendance_type == 1"> Public Holiday </span> -->
+            </p>
+            <ion-icon slot="end" id="{{ 'wkdown' + i }}" style="font-size: 24px;color: #707070;"  name="chevron-down-outline"></ion-icon>
+            <ion-icon slot="end" id="{{ 'wkup' + i }}" style="font-size: 24px;color: #707070;display: none;"  name="chevron-up-outline"></ion-icon>
+          </ion-item>
+          <ion-grid id="{{ 'mywk' + i }}" class="total-blk" [ngStyle]="!item.open ? {'display': 'none'} : {'display': 'block'}"  >
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime" type="text" (ionChange)="mouseOutWkAttendance(item.value.start_time, item.value.end_time, item.value.total_break_time, i)" formControlName="start_time"></ion-input>
+                <label class="has-error" *ngIf="item.controls.start_time.invalid" >Not Entered</label>
+              </ion-col>
+              <ion-col size="1" style="text-align: center;">-</ion-col>
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="mouseOutWkAttendance(item.value.start_time, item.value.end_time, item.value.total_break_time, i)" formControlName="end_time"></ion-input>
+                <label class="has-error" *ngIf="item.controls.end_time.invalid" >Not Entered</label>
+              </ion-col>
+              <ion-col size="5">
+                
+              </ion-col> 
+              <ion-col size="7">
+    
+                <ion-select class="dropdownstyle" formControlName="pattern" (ionChange)="changePattern($event, i)" selectedText="{{ displayPattern(item.value.pattern) }}" name="custWkReport" placeholder="-" >
+                  <ion-select-option  value="">-</ion-select-option>
+                  <ion-select-option *ngFor="let p of workPatternExist; let pt = index" value="{{ p.pattern }}">{{ displayPattern(p.pattern) }}</ion-select-option>
+                </ion-select>
+                <!-- <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2">
+                <ion-input class="worktime borderRadius" (ionChange)="mouseOverReduceBreakTime(item.value.total_break_time, item.value.total_work_time, item.value.o, i)" type="text" formControlName="total_break_time"></ion-input>
+                <label *ngIf="item.controls.total_break_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="5">
+                minutes
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="mouseOutNightOverTime(item.value.night_break_time, item.value.night_work_time, i)" formControlName="night_break_time"></ion-input>
+                <label *ngIf="item.controls.night_break_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="5">
+                minutes
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="total_work_time"></ion-input>
+                <label *ngIf="item.controls.total_work_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+                <label *ngIf="item.controls.over_work_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.late_night_working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="mouseOverResetNightBT(i)" formControlName="night_work_time"></ion-input>
+                <label *ngIf="item.controls.night_work_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="4"></ion-col> 
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="deduction_time"></ion-input>
+                <label *ngIf="item.controls.deduction_time.invalid" >Must be fill</label>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span>  
+              </ion-col> 
+              <ion-col size="7">
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="atendance_type" selectedText="{{ selectedValueAttendance(item.value.atendance_type, 'en') }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="atendance_type" selectedText="{{ selectedValueAttendance(item.value.atendance_type, 'jp') }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+                <label *ngIf="item.controls.atendance_type.invalid" >Must be fill</label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-input class="worktime borderRadius" type="text" formControlName="reason"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+
+        <ion-list lines="none" class="date-gray-container" *ngIf="(item.value.start_time != '00:00') && (isWeekEnd(item.value.report_date) == false) && (entered == false)">
+          <ion-item tappable (click)="myWkToggleFunction('mywk' + i, i)" class="date-gray-blk" color="newColor" >
+            <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+            <p>
+              <span class="datetitle">{{ item.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+              <span> {{ dataLeng?.entered_working_hour }} </span>
+            </p>
+            <ion-icon slot="end" id="{{ 'wkdown' + i }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+            <ion-icon slot="end" id="{{ 'wkup' + i }}" style="font-size: 24px;color: #707070; display: none;"  name="chevron-up-outline"></ion-icon>
+          </ion-item>
+          <ion-grid id="{{ 'mywk' + i }}" class="total-blk" [ngStyle]="!item.open ? {'display': 'none'} : {'display': 'block'}"  >
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime" type="text" (ionChange)="mouseOutWkAttendance(item.value.start_time, item.value.end_time, item.value.total_break_time, i)" formControlName="start_time"></ion-input>
+              </ion-col>
+              <ion-col size="1" style="text-align: center;">-</ion-col>
+              <ion-col size="3">
+                <ion-input class="worktime" type="text" (ionChange)="mouseOutWkAttendance(item.value.start_time, item.value.end_time, item.value.total_break_time, i)" formControlName="end_time"></ion-input>
+              </ion-col>
+              <ion-col size="5">
+                
+              </ion-col> 
+              <ion-col size="7">
+                <ion-select class="dropdownstyle" formControlName="pattern" (ionChange)="changePattern($event, i)" selectedText="{{ displayPattern(item.value.pattern) }}" name="custWkReport" placeholder="-" >
+                  <ion-select-option  value="">-</ion-select-option>
+                  <ion-select-option *ngFor="let p of workPatternExist; let pt = index" value="{{ p.pattern }}">{{ displayPattern(p.pattern) }}</ion-select-option>
+                </ion-select>
+                <label *ngIf="item.controls.pattern.invalid" style="color: red;">Please select pattern</label>
+                <!-- <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="mouseOverReduceBreakTime(item.value.total_break_time, item.value.total_work_time, item.value.over_work_time, i)" formControlName="total_break_time"></ion-input>
+              </ion-col>
+              <ion-col size="5">
+                minutes
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="nightOverTime(item.value.start_time, item.value.end_time, item.value.night_break_time, item.value.night_work_time, i)" formControlName="night_break_time"></ion-input>
+              </ion-col>
+              <ion-col size="5">
+                minutes
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="total_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.late_night_working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" (ionChange)="mouseOverResetNightBT(i)" formControlName="night_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="deduction_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="atendance_type" selectedText="{{ selectedValueAttendance(item.value.atendance_type, 'en') }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="atendance_type" selectedText="{{ selectedValueAttendance(item.value.atendance_type, 'jp') }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-input style="border: 1px solid #e4e4e4; color: #707070" type="text" formControlName="reason"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+
+        <ion-list lines="none" class="date-weekend-container" *ngIf="(item.value.atendance_type == 1) && (isWeekEnd(item.value.report_date) == true)  && ( weekEnd == false)">
+          <ion-item tappable (click)="myWkToggleFunction('mywk' + i, i)" class="date-weekend-blk" color="newColor" >
+            <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+            <p>
+              <span class="datetitle">{{ item.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+              <span>{{ dataLeng?.no_entries }}</span>
+            </p>
+            <ion-icon slot="end" id="{{ 'wkdown' + i }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+            <ion-icon slot="end" id="{{ 'wkup' + i }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+          </ion-item>
+          <ion-grid id="{{ 'mywk' + i }}" class="total-blk" [ngStyle]="!item.open ? {'display': 'none', 'transition': '2s'} : {'display': 'block', 'transition': '2s'}"  >
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3"></ion-col>
+              <ion-col size="1" style="text-align: center;"></ion-col>
+              <ion-col size="3"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col> 
+              <ion-col size="7"></ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="total_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.late_night_working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" value="{{ item.value.atendance_type }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" value="{{ item.value.atendance_type }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-input class="worktime borderRadius" type="text" formControlName="reason"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+
+        <!-- Start Public Holiday -->
+        <ion-list lines="none" class="date-gray-container" *ngIf="(holidayCheck(item.value.atendance_type) == true) && (isWeekEnd(item.value.report_date) == false) && ( weekEnd == false)">
+          <ion-item tappable (click)="myWkToggleFunction('mywk' + i, i)" class="date-gray-blk" color="newColor" >
+            <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+            <p>
+              <span class="datetitle">{{ item.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+              <span> {{ holidayNameSwitch(item.value.atendance_type, postData.language) }}</span>
+              
+            </p>
+            <ion-icon slot="end" id="{{ 'wkdown' + i }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+            <ion-icon slot="end" id="{{ 'wkup' + i }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+          </ion-item>
+          <ion-grid id="{{ 'mywk' + i }}" class="total-blk" [ngStyle]="!item.open ? {'display': 'none', 'transition': '2s'} : {'display': 'block', 'transition': '2s'}"  >
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3"></ion-col>
+              <ion-col size="1" style="text-align: center;"></ion-col>
+              <ion-col size="3"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col> 
+              <ion-col size="7"></ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+              </ion-col> 
+              <ion-col size="2"></ion-col>
+              <ion-col size="5">
+                
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="total_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.late_night_working_hours }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+              </ion-col> 
+              <ion-col size="3">
+                <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+              </ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row> -->
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" value="{{ item.value.atendance_type }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+                <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" value="{{ item.value.atendance_type }}" placeholder="-" >
+                  <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5">
+                <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+              </ion-col> 
+              <ion-col size="7">
+                <ion-input class="worktime borderRadius" type="text" formControlName="reason"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+        <!-- End Public Holiday -->
+      </div>
+      
+    </div> 
+  </div>
+
+  <ion-list id="totalblk" lines="none" class="date-white-container">
+    <ion-item class="date-white-blk" color="newColor" >
+      <span style="font-size: 20px;">{{ dataLeng?.total }}</span>
+      <ion-icon slot="end" style="font-size: 24px;color: #707070;" name="chevron-up-outline"></ion-icon>
+    </ion-item>
+    <ion-grid class="total-blk">
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.working_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.mng_total_work_time }}</ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col size="8">{{ dataLeng?.over_time }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.mng_over_work_time }}</ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.late_night_working_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.mng_night_work_time }}</ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col size="8">{{ dataLeng?.deduction_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.mng_deduction_time }}</ion-col>
+      </ion-row> -->
+    </ion-grid> 
+  </ion-list>
+
+  <ion-list id="resultblk" lines="none" class="date-white-container">
+    <ion-item tappable (click)="toggleSection(32)" [ngClass]="{'section-active': total, 'section': !total}" class="date-white-blk" color="newColor" >
+      <span style="font-size: 20px;">{{ dataLeng?.result }}</span>
+      <ion-icon slot="end" style="font-size: 24px;color: #707070;" name="chevron-up-outline"></ion-icon>
+    </ion-item>
+    <ion-grid class="total-blk">
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.working_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_operated_time }}</ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col size="8">{{ dataLeng?.over_time }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_over_work_time }}</ion-col>
+      </ion-row> 
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.overtime_payment }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_salary_time }}</ion-col>
+      </ion-row>-->
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.late_night_working_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_night_work_time }}</ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col size="8">{{ dataLeng?.deduction_hours }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_deduction_time }}</ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.exercise_of_paid_holidays }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_holiday }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.exercise_of_paid_half_holidays }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_harf_holiday }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.total }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_total_holiday }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.absenteeism_days }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_absence_num }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="8">{{ dataLeng?.closing_dates }}</ion-col>
+        <ion-col size="4" class="textcenter">{{ work_reports?.rslt_special_holiday }}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">&nbsp;</ion-col>
+      <ion-col size="6" >
+        <div class="bd1-color" (click)="downloadWorkReportExcel('https://stgessence.phoenix.xyz', '/general/excel/mobile_download/download_excel.php', 'workreport')">
+          <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+          {{ dataLeng?.download }} Excel <!-- workreport excel download -->
+        </div>
+        
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-list>
+    <div formArrayName="member_info" style="margin: 15px;">
+      <div *ngFor="let mbitem of member_info.controls ; let i = index ">
+        <div [formGroupName]="i">
+          <ion-textarea formControlName="new_note" style="border: 1px solid #dddddd;border-radius: 15px; padding: 5px" ></ion-textarea>
+        </div>
+      </div>
+    </div>
+    <div style="margin: 15px;">
+      <pre>{{ mbInfo?.note }}
+      </pre>
+      
+    </div>
+  </ion-list>
+</div>
+<!-- End Workreport list -->
+
+<!-- Start Transporation Expense -->
+<div formArrayName="transport_expense_detail" id="transportext" *ngIf="trasport_switch == true">
+  <div *ngFor="let item of transport_expense_detail.controls ; let i = index ">
+    <div [formGroupName]="i">
+      <ion-list lines="none" class="date-container bg-bluelight"  >
+        <ion-item tappable  class="date-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p style="margin: 7px auto;">
+            <span class="datetitle">{{ dataLeng?.transportation }}</span>
+            <!-- <br>
+            {{ te.use_date | date: 'yyyy/MM/dd EEEE' }} -->
+          </p>
+        </ion-item>
+        <ion-grid class="total-blk"  >
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.date }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-datetime class="worktime borderRadius" displayFormat="MMM DD, YYYY" formControlName="use_date" display-timezone="utc"></ion-datetime>
+              <label *ngIf="item.controls.use_date.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.destination }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="destination"  [ngClass]="{ 'has-error': item.controls.destination.invalid }" value="{{ item.value.destination }}"></ion-input>
+              <label *ngIf="item.controls.destination.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.transportation }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-select class="worktime borderRadius" formControlName="transport_type" value="transport" selectedText="{{ selectedValueTran(item.value.transport_type, 'en') }}" *ngIf="postData.language == 'en'" placeholder="Select One" >
+                <ion-select-option *ngFor="let s of transporation" value="{{ s.id }}">{{ s.value }}</ion-select-option>
+              </ion-select>
+              <ion-select class="worktime borderRadius" formControlName="transport_type" value="{{ item.value.transport_type }}" selectedText="{{ selectedValueTran(item.value.transport_type, 'jp') }}" *ngIf="postData.language == 'jp'" placeholder="Select One" >
+                <ion-select-option *ngFor="let s of transporationjp" value="{{ s.id }}">{{ s.value }}</ion-select-option>
+              </ion-select>
+              <label *ngIf="item.controls.transport_type.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.depature }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="from_area" ></ion-input>
+              <label *ngIf="item.controls.from_area.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.arrival }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="to_area" ></ion-input>
+              <label *ngIf="item.controls.to_area.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.oneway_roundtrip }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'en'"  formControlName="rourte_type" selectedText="{{ selectedValueRoute(item.value.rourte_type, 'en') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let r of route_type" value="{{ r.id }}">{{ r.value }}</ion-select-option>
+              </ion-select>
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'jp'"  formControlName="rourte_type" selectedText="{{ selectedValueRoute(item.value.rourte_type, 'jp') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let r of route_type_jp" value="{{ r.id }}">{{ r.value }}</ion-select-option>
+              </ion-select>
+              <label *ngIf="item.controls.rourte_type.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.voucher }}</span>  
+            </ion-col> 
+            <ion-col size="6">
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'en'"  formControlName="print_flg" selectedText="{{ selectedValueYesNo(item.value.print_flg, 'en') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let d of tran_expen" value="{{ d.id }}">{{ d.value }}</ion-select-option>
+              </ion-select>
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'jp'" formControlName="print_flg" selectedText="{{ selectedValueYesNo(item.value.print_flg, 'jp') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let d of tran_expen_jp" value="{{ d.id }}">{{ d.value }}</ion-select-option>
+              </ion-select>
+              <label *ngIf="item.controls.print_flg.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.billing }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'en'" (ionChange)="changeTranTotalorCustom($event, i)" formControlName="demand_type" selectedText="{{ selectedValueBilling(item.value.demand_type, 'en') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let d of deman_type" value="{{ d.id }}">{{ d.value }}</ion-select-option>
+              </ion-select>
+              <ion-select class="worktime borderRadius" *ngIf="postData.language == 'jp'" formControlName="demand_type" selectedText="{{ selectedValueBilling(item.value.demand_type, 'jp') }}" cancelText="Cancel" okText="Ok" placeholder="Select One" >
+                <ion-select-option *ngFor="let d of deman_type_jp" value="{{ d.id }}">{{ d.value }}</ion-select-option>
+              </ion-select>
+              <label *ngIf="item.controls.demand_type.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.amount }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input type="number" class="worktime borderRadius" (ionChange)="changeCustomerBill($event, i)" formControlName="amount"></ion-input>
+              <label *ngIf="item.controls.amount.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+           <ion-input type="hidden" id="customerBilling" value="{{ res_total }}"></ion-input>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.action }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-button color="white" class="del-btn" (click)="removeTranExpense(i)" >
+                <ion-icon slot="start" name="trash-outline" style="font-size: 1.2rem;"></ion-icon>
+                {{ dataLeng?.remove }}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+      
+    </div>
+  </div>
+  <ion-list class="btn-container" lines="none">
+    <ion-item lines="none">
+      <div class="addnewblg">
+          <ion-button color="secondary" class="add-transport-btn" (click)="addTranExpense()" >
+              {{ dataLeng?.add_transportation_expense }}
+          </ion-button>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <div class="totol-container">
+    <ion-list class="total-container">
+      <ion-grid>
+        <ion-row>
+          <ion-col>{{ dataLeng?.total_amount }}</ion-col>
+          <ion-col>
+            <ion-input type="number" class="worktime borderRadius" style="padding: 5px !important"   value="{{ postData.custom_total }}"></ion-input>
+          </ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'en'" >JPY</ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'jp'" >円</ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>{{ dataLeng?.customer_billing }} </ion-col>
+          <ion-col>
+            <ion-input type="number" class="worktime borderRadius" style="padding: 5px !important" value="{{ postData.custom_bill }}" ></ion-input>
+          </ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'en'" >JPY</ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'jp'" >円</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">&nbsp;</ion-col>
+          <ion-col size="6" style="padding-top: 15px;">
+            <div class="bd1-color" (click)="downloadWorkReportExcel('https://stgessence.phoenix.xyz', '/general/excel/mobile_download/download_excel.php', 'transport')">
+              <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+              {{ dataLeng?.download }} Excel <!-- transporatiion download -->
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">&nbsp;</ion-col>
+          <ion-col size="6" style="padding-top: 25px;">
+            &nbsp;
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+  </div>
+</div> <!-- End Transporation Expense -->
+
+<!-- Start Settlement Expense -->
+<div formArrayName="expense_report_detail" id="settletext" *ngIf="settle_switch == true">
+  <div *ngFor="let item of expense_report_detail.controls ; let i = index ">
+    <div [formGroupName]="i">
+      <ion-list lines="none" class="date-container bg-bluedark"  >
+        <ion-item tappable  class="date-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p style="margin: 7px auto;">
+            <span class="datetitle">{{ dataLeng?.settlement_expense }} </span>
+            <!-- <br>
+            {{ te.use_date | date: 'yyyy/MM/dd EEEE' }} -->
+          </p>
+        </ion-item>
+        <ion-grid class="total-blk"  >
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.date }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-datetime class="worktime borderRadius" displayFormat="MMM DD, YYYY" formControlName="ex_use_date" display-timezone="gmt"></ion-datetime>
+              <label *ngIf="item.controls.ex_use_date.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.purpose }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="ex_purpose"  [ngClass]="{ 'has-error': item.controls.ex_purpose.invalid }" value="{{ item.value.ex_purpose }}"></ion-input>
+              <label *ngIf="item.controls.ex_purpose.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.payee }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="ex_payee"  [ngClass]="{ 'has-error': item.controls.ex_payee.invalid }" value="{{ item.value.ex_payee }}"></ion-input>
+              <label *ngIf="item.controls.ex_payee.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.attended }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="ex_attendee" [ngClass]="{ 'has-error': item.controls.ex_attendee.invalid }"></ion-input>
+              <label *ngIf="item.controls.ex_attendee.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.amount }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="ex_amount" [ngClass]="{ 'has-error': item.controls.ex_amount.invalid }"></ion-input>
+              <label *ngIf="item.controls.ex_amount.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.receipt_no }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-input class="worktime borderRadius" type="text" formControlName="ex_receipt_no" [ngClass]="{ 'has-error': item.controls.ex_receipt_no.invalid }"></ion-input>
+              <label *ngIf="item.controls.ex_receipt_no.invalid" class="has-error" >Must be fill</label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <span style="margin-top: 5px;">{{ dataLeng?.action }}</span> 
+            </ion-col> 
+            <ion-col size="6">
+              <ion-button color="white" class="del-btn" (click)="removeSettleExpense(i)" >
+                <ion-icon slot="start" name="trash-outline" style="font-size: 1.2rem;"></ion-icon>
+                {{ dataLeng?.remove }}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+      
+    </div>
+  </div>
+  <ion-list class="btn-container" lines="none">
+    <ion-item lines="none">
+      <div class="addnewblg">
+          <ion-button color="secondary" class="add-transport-btn" (click)="addSettleExpense()" >
+            {{ dataLeng?.add_settlement_expense }} 
+          </ion-button>
+      </div>
+    </ion-item>
+    
+  </ion-list>
+
+  <div class="totol-container">
+    <ion-list class="total-container">
+      <ion-grid>
+        <ion-row>
+          <ion-col>{{ dataLeng?.total_amount }}</ion-col>
+          <ion-col>
+            <ion-input type="number" class="worktime borderRadius" style="padding: 5px !important"  value="{{ expenReport.ex_total_amount }}"></ion-input>
+          </ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'en'" >JPY</ion-col>
+          <ion-col class="textcenter" size="2" *ngIf="postData.language == 'jp'" >円</ion-col>
+        </ion-row>
+        
+       </ion-grid>
+    </ion-list>
+  </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">&nbsp;</ion-col>
+      <ion-col size="6" >
+        <div class="bd1-color" (click)="downloadWorkReportExcel('https://stgessence.phoenix.xyz', '/general/excel/mobile_download/download_excel.php', 'transport')">
+          <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+          {{ dataLeng?.download }} Excel <!-- settlement excel download -->
+        </div>
+        
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div> <!-- End Settlement Expense -->
+
+<!-- Start cusomer report block display -->
+<div id="customerWorkReport" *ngIf="customer_switch == true">
+  <div class="topblg"  *ngFor="let c of customerWorkReport; let i = index">
+    <ion-list lines="none" class="date-white-container" *ngIf="i == 0">
+      <ion-item tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 500;color: #707070;">{{ dataLeng?.detail }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="!customerWorkReport?.open" name="chevron-down-outline"></ion-icon>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon>
+      </ion-item>
+      <ion-grid class="detail-box" [ngStyle]="!customerWorkReport?.open ? {'display': 'none'} : {'display': 'block'}">
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.customer_name }}</b></ion-col>
+          <ion-col size="7">{{ c.client_name }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.project_name }}</b></ion-col>
+          <ion-col size="7">{{ c.project_name }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.contract_period }}</b></ion-col>
+          <ion-col size="7">{{ c.start_contract_date | date: 'yyyy/MM/dd' }} ~ {{ c.end_contract_date | date: 'yyyy/MM/dd' }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+    
+    <ion-list lines="none" *ngIf="i == 0">
+      <ion-item>
+        <b style="color: #707070;">{{ dataLeng?.customer_workreport }}</b>
+        <ion-select slot="end" id="customerWkDropdown" value="{{ postData.mySelect }}" [(ngModel)]="postData.mySelect" [ngModelOptions]="{standalone: true}" placeholder="{{ c.client_report_flg === 1 ? 'Yes' : 'No' }}" (ngModelChange)='onOptionsSelected(postData.mySelect)' class="dropdownstyle borderRadius dropdown" style="padding: 7px 13px;" >
+          <ion-select-option *ngFor="let t of tran_expen; let i of index" selected="true" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+        </ion-select>
+        
+      </ion-item>
+      <ion-item>
+        <p>{{ dataLeng?.if_there }} </p>
+          
+      </ion-item>
+    </ion-list>
+    
+    <!-- new customer attendance -->
+    <div *ngIf="(i == 0) && (customerSelectOpt == 0)">
+      <div formArrayName="customer_work_report_detail" id="customer_attend_list" *ngIf="customerSelectOpt == 0" >
+        <div class="datelist" *ngFor="let items of customer_work_report_detail.controls; let r = index;">
+          <div [formGroupName]="r">
+            <!-- start Date not entered -->
+            <ion-list lines="none" class="date-container bg-bluelight" *ngIf="(items.value.customer_attendance_type != 1) && (items.value.customer_start_time == '00:00') && (isWeekEnd(items.value.report_date) == false) " >
+              <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-blk" color="newColor" >
+                <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+                <p>
+                  <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                  <span> {{ dataLeng?.wkhour_not_entered }}</span>
+                </p>
+                <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+                <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+              </ion-item>
+              <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime" type="text" formControlName="customer_start_time" (ionChange)="mouseOutWkAttendance(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_break_time, i)"></ion-input>
+                  </ion-col>
+                  <ion-col size="1" style="text-align: center;">-</ion-col>
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_end_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col> 
+                  <ion-col size="7">
+                    <!-- <ion-select class="dropdownstyle" value="{{ items.value.customer_attendance_type }}" name="custWkReport" placeholder="-" >
+                      <ion-select-option *ngFor="let p of workPatternExist" value="{{ p.pattern }}">勤務時間_パタン{{ p.pattern }}</ion-select-option>
+                    </ion-select> 
+                    <ion-select class="dropdownstyle" formControlName="pattern" (ionChange)="changePattern($event, i)" selectedText="{{ displayPattern(items.value.pattern) }}" name="custWkReport" placeholder="-" >
+                      <ion-select-option  value="">-</ion-select-option>
+                      <ion-select-option *ngFor="let p of workPatternExist; let pt = index" value="{{ pt }}">{{ displayPattern(p.pattern) }}</ion-select-option>
+                    </ion-select>-->
+                    <!-- <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_break_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    minutes
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_night_break_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    minutes
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row>
+        
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type"  selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                  </ion-col>
+                </ion-row>
+    
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-list>
+            <!-- end Date not entered -->
+
+            <!-- Start Public Holiday -->
+            <ion-list lines="none" class="date-gray-container" *ngIf="(holidayCheck(items.value.customer_attendance_type) == true) && (isWeekEnd(items.value.report_date) == false) && ( weekEnd == false)">
+              <ion-item tappable (click)="myWkToggleFunction('mywk' + r, r)" class="date-gray-blk" color="newColor" >
+                <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+                <p>
+                  <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                  <span> {{ holidayNameSwitch(items.value.customer_attendance_type, postData.language) }}</span>
+                  
+                </p>
+                <ion-icon slot="end" id="{{ 'wkdown' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+                <ion-icon slot="end" id="{{ 'wkup' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+              </ion-item>
+              <ion-grid id="{{ 'mywk' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none', 'transition': '2s'} : {'display': 'block', 'transition': '2s'}"  >
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3"></ion-col>
+                  <ion-col size="1" style="text-align: center;"></ion-col>
+                  <ion-col size="3"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col> 
+                  <ion-col size="7"></ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row>
+                <!-- <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row> -->
+                
+                
+                <!-- <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row> -->
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" value="{{ items.value.customer_attendance_type }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" value="{{ items.value.customer_attendance_type }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                    {{ items.value.clt_holiday_name }}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-list>
+            <!-- End Public Holiday -->
+
+            <!-- Weekend Date Started -->
+          <ion-list lines="none" class="date-weekend-container" *ngIf="items.value.customer_start_time == '00:00' && isWeekEnd(items.value.report_date) == true" >
+            <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-weekend-blk" color="newColor" >
+              <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+              <p>
+                <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                <span>{{ dataLeng?.no_entries }}</span>
+              </p>
+              <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+              <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+            </ion-item>
+            <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3"></ion-col>
+                <ion-col size="1" style="text-align: center;"></ion-col>
+                <ion-col size="3"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col> 
+                <ion-col size="7"></ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                </ion-col>
+                <ion-col size="4"></ion-col>
+              </ion-row>
+      
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-list>
+          <!-- Weekend Date End-->
+
+          <!-- Date entered Started -->
+          <ion-list lines="none" class="date-gray-container" *ngIf="items.value.customer_start_time != '00:00' && isWeekEnd(items.value.report_date) == false" >
+            <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-gray-blk" color="newColor" >
+              <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+              <p>
+                <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                <span> {{ dataLeng?.entered_working_hour }}</span>
+              </p>
+              <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+              <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+            </ion-item>
+            <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime" type="text" formControlName="customer_start_time" (ionChange)="customer_mouseOutWkAttendance(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="1" style="text-align: center;">-</ion-col>
+                <ion-col size="3">
+                  <ion-input class="worktime" type="text" formControlName="customer_end_time" (ionChange)="customer_mouseOutWkAttendance(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  
+                </ion-col> 
+                <ion-col size="7">
+                  <!-- <ion-select class="worktime borderRadius" value="2" placeholder="Select One" >
+                    <ion-select-option >Stardard Hour</ion-select-option>
+                    <ion-select-option >Stardard Hour</ion-select-option>
+                  </ion-select>
+                  <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_break_time" (ionChange)="customer_nightOverTime(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_night_break_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  minutes
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_night_break_time" (ionChange)="customer_nightOverTime(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_night_break_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  minutes
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime borderRadius" type="text" readonly formControlName="customer_total_work_time"></ion-input>
+                </ion-col>
+                <ion-col size="4"></ion-col>
+              </ion-row>
+      
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type"  selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-list>
+          <!--  Date entered End-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="displayswitch" *ngIf="customerSelectOpt == 1">
+    <form [formGroup]="myUploadForm" > 
+    <ion-grid style="border-bottom: 1px dashed #000000; margin: 15px; padding-bottom: 15px;">
+      <ion-row>
+        <ion-col >
+          <ion-input type="file" accept="application/pdf" formControlName="file" (change)="onFileChange($event)"></ion-input>
+          <span *ngIf="fileName_dly == 0 && customerWorkReport[0].filename">
+            {{ customerWorkReport[0].filename }}
+          </span>
+          
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <div class="bd1-color"  (click)="onUploadPDF(customerWorkReport)">
+            <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+            Upload PDF
+            
+          </div>
+          <!-- <ion-button shape="round" fill="outline" (click)="onUploadPDF(customerWorkReport)">
+            <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+            Upload PDF
+          </ion-button> -->
+          <div *ngIf="fpdf.file.touched && fpdf.file.invalid" class="alert alert-danger">
+              <div *ngIf="fpdf.file.errors.required">File is required.</div>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="bd1-color" (click)="onRemovePdf_customerwk(customerWorkReport)" style="border: 1px solid #feaa46; color: #feaa46;">
+            <ion-icon slot="start"class="icon-style" style="color: #feaa46;" name="trash-outline"></ion-icon>
+            <!-- {{ dataLeng?.remove }} --> Remove
+          </div>
+        </ion-col>
+        <ion-col size="1"></ion-col>
+      </ion-row>
+    </ion-grid>
+</form>
+    <ion-list lines="none" class="date-white-container" >
+      <ion-item style="border-bottom: 2px solid #ebebeb;" tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 700;color: #707070; font-size: 1.3rem;">{{ dataLeng?.total }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+          <!-- <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon> -->
+      </ion-item>
+      <ion-item >
+        <p style="width: 100%">
+          <span style="float: left;font-weight: 700;color: #707070; padding: 10px 5px;">{{ dataLeng?.actual_working_hour }}</span>
+          <span style="float: right;padding: 10px 24px;">{{ totalWkHour }} </span>
+        </p>
+      </ion-item>
+    </ion-list>
+    <p>&nbsp;</p>
+  </div>
+  <!-- if cusomer report 0 display -->
+  <div class="displayswitch" *ngIf="customerSelectOpt == 0">
+    <ion-list lines="none" class="date-white-container" >
+      <ion-item style="border-bottom: 2px solid #ebebeb;" tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 700;color: #707070; font-size: 1.3rem;">{{ dataLeng?.total }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="!customerWorkReport?.open" name="chevron-down-outline"></ion-icon>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon>
+      </ion-item>
+      <ion-item [ngStyle]="!customerWorkReport?.open ? {'display': 'none'} : {'display': 'block'}">
+        <p style="width: 100%">
+          <span style="float: left;font-weight: 700;color: #707070; padding: 10px 5px;">{{ dataLeng?.actual_working_hour }}</span>
+          <span style="float: right;padding: 10px 24px;">00:00</span>
+        </p>
+      </ion-item>
+    </ion-list>
+  </div>
+  <p>&nbsp;</p>
+</div>
+<!-- End cusomer report block display -->
+
+<!-- Start cusomer report2 block display -->
+<div id="customerWorkReport2" *ngIf="customer_switch2 == true">
+  <div class="topblg"  *ngFor="let c of customerWorkReport; let i = index">
+    <ion-list lines="none" class="date-white-container" *ngIf="i == 1">
+      <ion-item tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 500;color: #707070;">{{ dataLeng?.detail }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="!customerWorkReport?.open" name="chevron-down-outline"></ion-icon>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon>
+      </ion-item>
+      <ion-grid class="detail-box" [ngStyle]="!customerWorkReport?.open ? {'display': 'none'} : {'display': 'block'}">
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.customer_name }}</b></ion-col>
+          <ion-col size="7">{{ c.client_name }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.project_name }}</b></ion-col>
+          <ion-col size="7">{{ c.project_name }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="5"><b style="color: #707070;">{{ dataLeng?.contract_period }}</b></ion-col>
+          <ion-col size="7">{{ c.start_contract_date | date: 'yyyy/MM/dd' }} ~ {{ c.end_contract_date | date: 'yyyy/MM/dd' }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+    
+    <ion-list lines="none" *ngIf="i == 1">
+      <ion-item>
+        <b style="color: #707070;">{{ dataLeng?.customer_workreport }}</b>
+        <ion-select slot="end" id="customerWkDropdown" value="{{ postData.mySelect }}" [(ngModel)]="postData.mySelect" [ngModelOptions]="{standalone: true}" placeholder="{{ c.client_report_flg === 1 ? 'Yes' : 'No' }}" (ngModelChange)='onOptionsSelected2(postData.mySelect)' class="dropdownstyle borderRadius dropdown" style="padding: 7px 13px;" >
+          <ion-select-option *ngFor="let t of tran_expen; let i of index" selected="true" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+        </ion-select>
+        
+      </ion-item>
+      <ion-item>
+        <p>{{ dataLeng?.if_there }} </p>
+          
+      </ion-item>
+    </ion-list>
+    
+    <!-- new customer attendance -->
+    <div *ngIf="(i == 1) && (customerSelectOpt2 == 0)">
+      <div formArrayName="customer_work_report_detail2" id="customer_attend_list2" *ngIf="customerSelectOpt2 == 0" >
+        <div class="datelist" *ngFor="let items of customer_work_report_detail2.controls; let r = index;">
+          <div [formGroupName]="r">
+            <!-- start Date not entered -->
+            <ion-list lines="none" class="date-container bg-bluelight" *ngIf="(items.value.customer_attendance_type !=1) && (items.value.customer_start_time == '00:00') && (isWeekEnd(items.value.report_date) == false)" >
+              <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-blk" color="newColor" >
+                <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+                <p>
+                  <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                  <span> {{ dataLeng?.wkhour_not_entered }}</span>
+                </p>
+                <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+                <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+              </ion-item>
+              <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime" type="text" formControlName="customer_start_time" ></ion-input>
+                  </ion-col>
+                  <ion-col size="1" style="text-align: center;">-</ion-col>
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_end_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col> 
+                  <ion-col size="7">
+                    <!-- <ion-select class="dropdownstyle" value="{{ items.value.customer_attendance_type }}" name="custWkReport" placeholder="-" >
+                      <ion-select-option *ngFor="let p of workPatternExist" value="{{ p.pattern }}">勤務時間_パタン{{ p.pattern }}</ion-select-option>
+                    </ion-select>
+                    <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_break_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    minutes
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_night_break_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="5">
+                    minutes
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row>
+        
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type"  selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                  </ion-col>
+                </ion-row>
+    
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-list>
+            <!-- end Date not entered -->
+
+            <!-- Start Public Holiday -->
+            <ion-list lines="none" class="date-gray-container" *ngIf="(holidayCheck(items.value.customer_attendance_type) == true) && (isWeekEnd(items.value.report_date) == false) && ( weekEnd == false)">
+              <ion-item tappable (click)="myWkToggleFunction('mywk' + r, r)" class="date-gray-blk" color="newColor" >
+                <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+                <p>
+                  <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                  <span> {{ holidayNameSwitch(items.value.customer_attendance_type, postData.language) }}</span>
+                  
+                </p>
+                <ion-icon slot="end" id="{{ 'wkdown' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+                <ion-icon slot="end" id="{{ 'wkup' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+              </ion-item>
+              <ion-grid id="{{ 'mywk' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none', 'transition': '2s'} : {'display': 'block', 'transition': '2s'}"  >
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3"></ion-col>
+                  <ion-col size="1" style="text-align: center;"></ion-col>
+                  <ion-col size="3"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col> 
+                  <ion-col size="7"></ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="2"></ion-col>
+                  <ion-col size="5">
+                    
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row>
+                <!-- <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.amount }} {{ dataLeng?.over_time }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="over_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row> -->
+                
+                
+                <!-- <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.deduction }}</span> 
+                  </ion-col> 
+                  <ion-col size="3">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="night_work_time"></ion-input>
+                  </ion-col>
+                  <ion-col size="4"></ion-col>
+                </ion-row> -->
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" value="{{ items.value.customer_attendance_type }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                    <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" value="{{ items.value.customer_attendance_type }}" placeholder="-" >
+                      <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                    </ion-select>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">
+                    <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                  </ion-col> 
+                  <ion-col size="7">
+                    <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                    {{ items.value.clt_holiday_name }}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-list>
+            <!-- End Public Holiday -->
+
+            <!-- Weekend Date Started -->
+          <ion-list lines="none" class="date-weekend-container" *ngIf="items.value.customer_start_time == '00:00' && isWeekEnd(items.value.report_date) == true" >
+            <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-weekend-blk" color="newColor" >
+              <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+              <p>
+                <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                <span>{{ dataLeng?.no_entries }}</span>
+              </p>
+              <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+              <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+            </ion-item>
+            <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3"></ion-col>
+                <ion-col size="1" style="text-align: center;"></ion-col>
+                <ion-col size="3"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col> 
+                <ion-col size="7"></ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2"></ion-col>
+                <ion-col size="5">
+                  
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_total_work_time"></ion-input>
+                </ion-col>
+                <ion-col size="4"></ion-col>
+              </ion-row>
+      
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-list>
+          <!-- Weekend Date End-->
+
+          <!-- Date entered Started -->
+          <ion-list lines="none" class="date-gray-container" *ngIf="items.value.customer_start_time != '00:00' && isWeekEnd(items.value.report_date) == false" >
+            <ion-item tappable (click)="myToggleFunction('myid' + r, r)"  class="date-gray-blk" color="newColor" >
+              <ion-icon slot="start" style="color: #707070;" name="alert-outline"></ion-icon>
+              <p>
+                <span class="datetitle">{{ items.value.report_date | date: 'yyyy/MM/dd EEEE' }}</span><br>
+                <span> {{ dataLeng?.entered_working_hour }}</span>
+              </p>
+              <ion-icon slot="end" id="{{ 'down' + r }}" style="font-size: 24px;color: #707070;" name="chevron-down-outline"></ion-icon>
+              <ion-icon slot="end" id="{{ 'up' + r }}" style="font-size: 24px;color: #707070; display: none;" name="chevron-up-outline"></ion-icon>
+            </ion-item>
+            <ion-grid id="{{ 'myid' + r }}" class="total-blk" [ngStyle]="!items.open ? {'display': 'none'} : {'display': 'block'}">
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.work_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime" type="text" formControlName="customer_start_time" (ionChange)="customer_mouseOutWkAttendance(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="1" style="text-align: center;">-</ion-col>
+                <ion-col size="3">
+                  <ion-input class="worktime" type="text" formControlName="customer_end_time" (ionChange)="customer_mouseOutWkAttendance(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  
+                </ion-col> 
+                <ion-col size="7">
+                  <!-- <ion-select class="worktime borderRadius" value="2" placeholder="Select One" >
+                    <ion-select-option >Stardard Hour</ion-select-option>
+                    <ion-select-option >Stardard Hour</ion-select-option>
+                  </ion-select>
+                  <ion-input style="border: 1px solid #e4e4e4; text-align: center;" type="number" value="333"></ion-input> -->
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_break_time" (ionChange)="customer_nightOverTime(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_night_break_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  minutes
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.night_break_time }}</span> 
+                </ion-col> 
+                <ion-col size="2">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_night_break_time" (ionChange)="customer_nightOverTime(items.value.customer_start_time, items.value.customer_end_time, items.value.customer_night_break_time, items.value.customer_break_time, r)"></ion-input>
+                </ion-col>
+                <ion-col size="5">
+                  minutes
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.working_hours }}</span> 
+                </ion-col> 
+                <ion-col size="3">
+                  <ion-input class="worktime borderRadius" type="text" readonly formControlName="customer_total_work_time"></ion-input>
+                </ion-col>
+                <ion-col size="4"></ion-col>
+              </ion-row>
+      
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.attendance_type }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'en'" formControlName="customer_attendance_type"  selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'en') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                  <ion-select class="dropdownstyle borderRadius" *ngIf="postData.language == 'jp'" formControlName="customer_attendance_type" selectedText="{{ selectedValueAttendance(items.value.customer_attendance_type, 'jp') }}" placeholder="-" >
+                    <ion-select-option *ngFor="let t of attendance_type_jp" value="{{ t.id }}" >{{ t.value }}</ion-select-option>
+                  </ion-select>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="5">
+                  <span style="margin-top: 5px;">{{ dataLeng?.reason }}</span> 
+                </ion-col> 
+                <ion-col size="7">
+                  <ion-input class="worktime borderRadius" type="text" formControlName="customer_reason"></ion-input>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-list>
+          <!--  Date entered End-->
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+
+  <div class="displayswitch" *ngIf="customerSelectOpt2 == 1">
+
+    <ion-grid style="border-bottom: 1px dashed #000000; margin: 15px; padding-bottom: 15px;">
+      <ion-row>
+        <ion-col size="6">
+          <div class="bd1-color">
+            <ion-icon slot="start"class="icon-style" name="cloud-download-outline"></ion-icon>
+            Upload PDF
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="bd1-color" style="border: 1px solid #feaa46; color: #feaa46;">
+            <ion-icon slot="start"class="icon-style" style="color: #feaa46;" name="trash-outline"></ion-icon>
+            {{ dataLeng?.remove }}
+          </div>
+        </ion-col>
+        <ion-col size="1"></ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-list lines="none" class="date-white-container" >
+      <ion-item style="border-bottom: 2px solid #ebebeb;" tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 700;color: #707070; font-size: 1.3rem;">{{ dataLeng?.total }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="!customerWorkReport?.open" name="chevron-down-outline"></ion-icon>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon>
+      </ion-item>
+      <ion-item [ngStyle]="!customerWorkReport?.open ? {'display': 'none'} : {'display': 'block'}">
+        <p style="width: 100%">
+          <span style="float: left;font-weight: 700;color: #707070; padding: 10px 5px;">{{ dataLeng?.actual_working_hour }}</span>
+          <span style="float: right;padding: 10px 24px;">0</span>
+        </p>
+      </ion-item>
+    </ion-list>
+  </div>
+  <!-- if cusomer report 0 display -->
+  <div class="displayswitch" *ngIf="customerSelectOpt2 == 0">
+    <ion-list lines="none" class="date-white-container" >
+      <ion-item style="border-bottom: 2px solid #ebebeb;" tappable (click)="toggleSectionc()" [ngClass]="{'section-active': customerWorkReport?.open, 'section': !customerWorkReport?.open}" class="customer-blk" color="newColor" >
+        <!-- <ion-item tappable (click)="toggleSection(90)"  class="date-blk" color="newColor" > -->
+          <p>
+            <span style="font-weight: 700;color: #707070; font-size: 1.3rem;">{{ dataLeng?.total }}</span>
+          </p>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="!customerWorkReport?.open" name="chevron-down-outline"></ion-icon>
+          <ion-icon slot="end" style="font-size: 24px;color: #707070;" *ngIf="customerWorkReport?.open" name="chevron-up-outline"></ion-icon>
+      </ion-item>
+      <ion-item [ngStyle]="!customerWorkReport?.open ? {'display': 'none'} : {'display': 'block'}">
+        <p style="width: 100%">
+          <span style="float: left;font-weight: 700;color: #707070; padding: 10px 5px;">{{ dataLeng?.actual_working_hour }}</span>
+          <span style="float: right;padding: 10px 24px;">00:00</span>
+        </p>
+      </ion-item>
+    </ion-list>
+  </div>
+</div>
+<!-- End cusomer report2 block display -->
+<!-- <p>
+  <button type="submit">Submit</button>
+</p> -->
+<ion-footer style="position: fixed; bottom: 0;">
+  <ion-toolbar class="footerbar" color="newColor">
+    <ion-grid class="footerbar">
+      <ion-row>
+        <ion-col>
+          <ion-button type="submit" id="store" class="ftbtnColor" (click)="onStoreClick()" color="ftbtnColor">Store</ion-button>
+        </ion-col>
+        <ion-col >
+          <ion-button type="submit" class="ftbtngrayColor" (click)="onApplyReportClick()" id="applyReport" color="ftbtnColor">Apply</ion-button>
+        </ion-col>
+        <ion-col *ngIf="mbInfo?.sales_bill_flg == 1">
+          <ion-button type="submit" class="ftbtngrayColor" (click)="onApplyExpenseClick()" id="applyExpense" color="ftbtnColor">Expense</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
+</form>

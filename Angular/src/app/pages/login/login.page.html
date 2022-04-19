@@ -1,0 +1,56 @@
+<!-- <ion-header>
+  <ion-toolbar color='dark'>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content>
+  <div class="textcenter logo-container">
+    <app-logo-large style="width: 83%;"></app-logo-large>
+  </div>
+<div class="form-container">
+
+  <form >
+    <p>
+      <ion-label class="login-lable" position="stacked">Email/Account</ion-label>
+      <ion-input type="text" name="username" class="input-style" [(ngModel)]="postData.username"></ion-input>
+    </p>
+    <p>
+      <ion-label class="login-lable" position="stacked">Password</ion-label>
+      <ion-input type="password" autocomplete="off" class="input-style" name="password" [(ngModel)]="postData.password"></ion-input> 
+    </p>
+    <p>
+      <ion-label class="login-lable"  position="stacked">Company</ion-label>
+      <ion-input type="text" autocomplete="off" class="input-style" name="company" [(ngModel)]="postData.company"></ion-input>
+      
+    </p>
+    
+
+      <!-- <ion-item lines="none">
+        <ion-label class="login-lable" position="stacked">Email/Account
+          <ion-input type="text" name="username" style="border-bottom: 1px solid #707070;" [(ngModel)]="postData.username"></ion-input>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label class="login-lable" position="stacked">Password
+          <ion-input type="password" autocomplete="off" style="border-bottom: 1px solid #707070;" name="password" [(ngModel)]="postData.password"></ion-input>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label class="login-lable"  position="stacked">Company
+          <ion-input type="text" autocomplete="off" style="border-bottom: 1px solid #707070;" name="company" [(ngModel)]="postData.company"></ion-input>
+        </ion-label>
+      </ion-item> -->
+    <p>
+      <ion-item lines="none" style="margin-bottom: 20px;">
+        <a slot="end" routerLink="/forgot-password" style="color: #c1c5ca;">Forgot password</a>
+      </ion-item>
+    </p>
+    <ion-button expand="block" style="font-size: 20px;" color="primary" (click)="loginAction()" >Login</ion-button>
+
+  
+  </form>
+</div>
+</ion-content>

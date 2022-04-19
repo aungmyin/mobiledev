@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/custom.js"],"names":[],"mappings":"AAAA;AACA;AACA;AACA;AACA,C","file":"scripts.js","sourcesContent":["function dropDownSwitch() {\r\n    var e = document.getElementById(\"customerWkDropdown\");\r\n    var strUser = e.options[e.selectedIndex].value;\r\n    alert(strUser);\r\n}"],"sourceRoot":"webpack:///"}
